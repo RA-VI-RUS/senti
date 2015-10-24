@@ -1,4 +1,20 @@
-# coding=UTF-8
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# //diff include
+# One ) where nltk data is and sent/data and sent /model (sent was removed)
+# two reddis connected dirrectly
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+#
+#
+#
+#
+#
+#  coding=UTF-8
 # General modules.
 import os, os.path
 import logging
@@ -29,6 +45,13 @@ from sent.sentiment import sentiment_score
 print( sentiment_score("go die"))
 
 
+
+
+
+
+
+
+
 # Define port from command line parameter.
 tornado.options.define("port", default=8888, help="run on the given port", type=int)
 
@@ -51,7 +74,7 @@ class MainHandler(BaseHandler):
 
 
     def on_auth(self, user):
-        if not user:
+        if self.get_cookie('SentiUser') == None:
             # Redirect to login if not authenticated.
             self.redirect("/login")
             return
@@ -132,7 +155,9 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
 
             message = {
                 '_id': ''.join(random.choice(string.ascii_uppercase) for i in range(12)),
-                'from': self.get_secure_cookie('user', str(datadecoded['user'])),
+                'from': self.get_cookie('SentiUser', str(datadecoded['user'])),
+                    # str(self.get_cookie('SentiUser')),
+
                 'body': tornado.escape.linkify(datadecoded["body"]),
                 'sentiment': 'rgb('+str(int(R))+','+str(int(G))+','+str(int(B))+'); ',
             }

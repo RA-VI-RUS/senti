@@ -3,6 +3,7 @@
 # Tornado modules.
 import tornado.web
 import tornado.escape
+import tornado.ioloop
 
 # Import application modules.
 from base import BaseHandler
@@ -45,6 +46,7 @@ class LoginHandler(BaseHandler, tornado.auth.GoogleMixin):
             # All data given. Log user in!
             else:
                 self._on_auth(user)
+                logging.info('Signed in !' + str(user["email"]) + " > " + str(user["name"]))
 
         else:
             try:
@@ -67,7 +69,6 @@ class LoginHandler(BaseHandler, tornado.auth.GoogleMixin):
                 + '</form>')
                 self.render_default("index.html", content=content)
             else:
-                logging.info('Received new message'+ str(user["email"]) +">"+ str(user["name"]))
                 self._on_auth(user)
 
 
@@ -127,20 +128,37 @@ class LoginHandler(BaseHandler, tornado.auth.GoogleMixin):
         """
         Callback for third party authentication (last step).
         """
-        if not user:
-            content = ('<div class="page-header"><h1>Login</h1></div>'
-            + '<div class="alert alert-error">' 
-            + '<button class="close" data-dismiss="alert">×</button>'
-            + '<h3>Authentication failed</h3>'
-            + '<p>This might be due to a problem in Tornados GoogleMixin.</p>'
-            + '</div>')
-            self.render_default("index.html", content=content)
-            return None
-        
+        # if not user:
+        #     content = ('<div class="page-header"><h1>Login</h1></div>'
+        #     + '<div class="alert alert-error">'
+        #     + '<button class="close" data-dismiss="alert">×</button>'
+        #     + '<h3>Authentication failed</h3>'
+        #     + '<p>This might be due to a problem in Tornados GoogleMixin.</p>'
+        #     + '</div>')
+        #     self.render_default("index.html", content=content)
+        #     return None
+        #
         # @todo: Validate user data.
         # Save user when authentication was successful.
+
+        self.set_secure_cookie("user", user["email"])
+
+        if not self.get_cookie('SentiUser'):
+                    self.set_cookie('SentiUser', user["email"])
+
+        self.application.usernames[user["email"]] = str(user["email"]) + "12345"
+        logging.info("get self username1 " + self.application.usernames[user["email"]])
+        logging.info("get self username1 " + str(self.application.usernames))
+        logging.info("get self username1 " + str(self.application.client))
+
+
+
         def on_user_find(result, user=user):
+
+
             #@todo: We should check if email is given even though we can assume.
+
+
             if result == "null" or not result:
                 # If user does not exist, create a new entry.
                 self.application.client.set("user:" + user["email"], tornado.escape.json_encode(user))
@@ -148,19 +166,21 @@ class LoginHandler(BaseHandler, tornado.auth.GoogleMixin):
                 # Update existing user.
                 # @todo: Should use $set to update only needed attributes?
                 dbuser = tornado.escape.json_decode(result)
+
                 dbuser.update(user)
                 user = dbuser
                 self.application.client.set("user:" + user["email"], tornado.escape.json_encode(user))
-            
+
+                # logging.info("client.get" + str(self.application.client.get("user:" + user["email"])))
+
             # Save user id in cookie.
-            self.set_secure_cookie("user", user["email"])
-            self.application.usernames[user["email"]] = user.get("name") or user["email"]
+
             # Closed client connection
             if self.request.connection.stream.closed():
                 logging.warning("Waiter disappeared")
                 return
             self.redirect("/")
-        
+
         dbuser = self.application.client.get("user:" + user["email"], on_user_find)
         
         
@@ -168,7 +188,8 @@ class LoginHandler(BaseHandler, tornado.auth.GoogleMixin):
 
 class LogoutHandler(BaseHandler):
     def get(self):
-        self.clear_cookie('user')
+        self.clear_cookie('SentiUser')
+        self.clear_all_cookies()
         self.redirect("/")
         
     
