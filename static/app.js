@@ -116,7 +116,7 @@ showMessage = function(message) {
     var existing = $("#m" + message._id);
     if (existing.length > 0) return;
     $("#messsages").append( '<div class="message" id="' + message._id
-                            + '" style="padding:7px; display: none; ">  <b>' +  message.user
+                            + '" style="padding:7px; display: none; ">  <b>' +  message.from
                             + ': </b> <comment       style=" background:'+ message.sentiment
                             +'    opacity: 0.7; width: inherit; color: #080808; font-weight: bold; padding: 5px; border: 2px solid;  border-radius: 25px;">'
                             + message.body
