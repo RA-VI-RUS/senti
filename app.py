@@ -245,29 +245,32 @@ class Application(tornado.web.Application):
         self.client = redis_connect()
 
 
+
+
 def redis_connect():
     """
     Established an asynchronous resi connection.
     """
     # Get Redis connection settings for Heroku with fallback to defaults.
-    redistogo_url = "redis://rediscloud:a1kFYwQ5Vudg7Wpa@pub-redis-17793.us-east-1-4.4.ec2.garantiadata.com:17793"
+    redistogo_url = os.getenv('REDISTOGO_URL', None)
+    # redistogo_url = "redis://rediscloud:a1kFYwQ5Vudg7Wpa@pub-redis-17793.us-east-1-4.4.ec2.garantiadata.com:17793"
 
-
-    # if redistogo_url == None:
-    #     REDIS_HOST = 'localhost'
-    #     REDIS_PORT = 6379
-    #     REDIS_PWD = None
-    #     REDIS_USER = None
-    # else:
-    redis_url = redistogo_url
-    redis_url = redis_url.split('redis://')[1]
-    redis_url = redis_url.split('/')[0]
-    REDIS_USER, redis_url = redis_url.split(':', 1)
-    REDIS_PWD, redis_url = redis_url.split('@', 1)
-    REDIS_HOST, REDIS_PORT = redis_url.split(':', 1)
+    if redistogo_url == None:
+        REDIS_HOST = 'localhost'
+        REDIS_PORT = 6379
+        REDIS_PWD = None
+        REDIS_USER = None
+    else:
+        redis_url = redistogo_url
+        redis_url = redis_url.split('redis://')[1]
+        redis_url = redis_url.split('/')[0]
+        REDIS_USER, redis_url = redis_url.split(':', 1)
+        REDIS_PWD, redis_url = redis_url.split('@', 1)
+        REDIS_HOST, REDIS_PORT = redis_url.split(':', 1)
     client = brukva.Client(host=REDIS_HOST, port=int(REDIS_PORT), password=REDIS_PWD)
     client.connect()
     return client
+
 
 
 
