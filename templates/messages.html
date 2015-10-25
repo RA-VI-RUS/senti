@@ -1,16 +1,39 @@
-<div id="messsages" style="margin-bottom: 10%">
+        <div id="messsages" style="background:white;
+                                   opacity: 0.7;
+
+                                   height:75%;
+                                   overflow-y: scroll;" >
   {% for message in messages %}
     {% module Template("message.html", message=message) %}
   {% end %}
 </div>
 
-<form class="form-inline" role="form" id="chat-input">
-  <div class="container container-fluid">
-  <div class="form-group">
-    <label class="sr-only" for="message-inpu">Chat Message</label>
-    <input type="text" class="form-control" name="body" id="message-input" placeholder="Chat Message" pattern=".{5,}"   required title="5 characters minimum">>
-    {% module xsrf_form_html() %}
-  </div>
-  <button type="submit" class="btn btn-default">Post</button>
-  </div>
-</form>
+
+
+
+    <form class="form-inline container" role="form" id="chat-input">
+          <!--<div class="container container-fluid">-->
+
+
+        <div class="form-group" style="width:100%; overflow: hidden; padding-right: .5em;">
+
+                    <!--<label class="sr-only" for="message-inpu">Chat Message</label>-->
+                     <input type="text"
+                           class="form-control inline"
+                           name="body"
+                           id="message-input"
+                           style="width:80%; margin:0; padding:0; float: left; "
+                           placeholder="Chat Message"
+                           pattern=".{5,}"
+                           required title="5 characters minimum">
+
+                    {% module xsrf_form_html() %}
+
+                   <button type="submit"
+                            class="inline  btn  btn-default"
+                            style="float: right; width:20%">
+                        Post
+                    </button>
+            <!--</div>-->
+        </div>
+    </form>

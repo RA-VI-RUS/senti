@@ -12,6 +12,7 @@ var ws = new WebSocket(host +"/socket/" + location.pathname.replace('/room/', ''
 function cookie(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r ? r[1] : undefined;
+
 }
 
 
@@ -25,8 +26,8 @@ $(document).ready(function() {
         return false;
     });
     $("#message-input").focus();
-    $('html, body').animate({scrollTop: $(document).height()}, 800);
-    
+    $('#messsages').animate({scrollTop: $(document).height()}, 400);
+    console.log("Doc ready Did that");
     // Connection state should be reflacted in submit button.
     var disabled = $("form#chat-input").find("input");
     disabled.attr("disabled", "disabled");
@@ -53,6 +54,8 @@ $(document).ready(function() {
         console.log("Closed!");
         disabled.attr("disabled", "disabled");
     };
+
+
 });
 
 
@@ -72,6 +75,8 @@ function postMessage(form) {
     console.log("Created message (successfuly)");
     $("#message-input").val("").select();
     disabled.removeAttr("disabled");
+
+
 }
 
 
@@ -80,6 +85,7 @@ function postMessage(form) {
  */
 updater = {}
 newMessages = function (data) {
+
     var messages = data.messages;
     if(messages.length == 0) return;
     updater.cursor = messages[messages.length - 1]._id;
@@ -87,47 +93,31 @@ newMessages = function (data) {
     for (var i = 0; i < messages.length; i++) {
         showMessage(messages[i]);
     }
+
+
 };
 
-//function getcol(percent){
-//
-//            if(percent != null)
-//            {
-//            r = percent<50 ? 255 : Math.floor(255-(percent*2-100)*255/100);
-//            g = percent>50 ? 255 : Math.floor((percent*2)*255/100);
-//            }
-//            else
-//            {
-//            r=0;
-//            g=0;
-//            b=0;
-//            }
-//            return 'rgb('+r+','+g+',0)';
-//        }
 
-//    '<div style=" background:'+ message.sentiment +' display: none;" class="message" id="' + message._id + '"><b>' +  message.user + ': </b>' + message.body + '</div>');
-
-
-/**
- * Function to add a bunch of (new) messages to the inbox.
- */
+// * Function to add a bunch of (new) messages to the inbox.
+// */
 showMessage = function(message) {
+
     console.log("Show Message");
+
     var existing = $("#m" + message._id);
     if (existing.length > 0) return;
     $("#messsages").append( '<div class="message" id="' + message._id
                             + '" style="padding:7px; display: none; ">  <b>' +  message.from
                             + ': </b> <comment       style=" background:'+ message.sentiment
-                            +'    opacity: 0.7; width: inherit; color: #080808; font-weight: bold; padding: 5px; border: 2px solid;  border-radius: 25px;">'
+                            +'     width: inherit; color: #080808; font-weight: bold; padding: 5px; border: 2px solid;  border-radius: 25px;">'
                             + message.body
                             +'  </comment>'
                             +'  </div>');
 
-
-
-
-
     $('#messsages').find(".message:last").slideDown("fast", function(){
-        $('html, body').animate({scrollTop: $(document).height()}, 400);
-    });
+        $('#messsages').animate({scrollTop: 2*$(document).height()}, 400);
+        console.log("Show Message Did that");
+         });
+
+
 };
